@@ -19,24 +19,15 @@ Property.create!({
   country: "India"
 })
 
-Property.create!({
-  name: "Sample Property 2",
-  description: "2 description",
-  headline: "2 headline",
-  address_1: "2 address_1",
-  address_2: "2 address_2",
-  city: "Jaipur",
-  state: "Rajasthan",
-  country: "India"
-})
-
-Property.create!({
-  name: "Sample Property 3",
-  description: "3 description",
-  headline: "3 headline",
-  address_1: "3 address_1",
-  address_2: "3 address_2",
-  city: "New York",
-  state: "New York",
-  country: "United States of America"
-})
+20.times do
+  Property.create!({
+    name: Faker::Lorem.unique.sentence(word_count: 3),
+    description: Faker::Lorem.paragraph(sentence_count: 10),
+    headline: Faker::Lorem.unique.sentence(word_count: 6),
+    address_1: Faker::Address.street_address,
+    address_2: Faker::Address.street_name,
+    city: Faker::Address.city,
+    state: Faker::Address.state,
+    country: Faker::Address.country
+  })
+end
