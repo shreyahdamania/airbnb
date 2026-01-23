@@ -63,3 +63,6 @@ gem "devise", "~> 4.9"
 gem "faker"
 
 gem "money-rails", "~> 3.0"
+
+gem "image_processing", "~> 1.13"
+gem "mini_magick", "~> 4.12"
