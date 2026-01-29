@@ -1,9 +1,13 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "swiper", "data-turbo-track": "reload" %>
+<% end %>
+
 <div class="bg-white">
   <div class="mx-auto max-w-2xl px-4 sm:px-6 sm:py-8 lg:max-w-7xl lg:px-8">
     <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
       <% @properties.each do |property| %>
         <div class="group relative">
-          <div class="swiper aspect-square w-full overflow-hidden rounded-md bg-gray-200">
+          <div class="swiper aspect-square w-full overflow-hidden rounded-md bg-gray-200" data-controller="swiper">
             <div class="swiper-wrapper">
               <% if property.images.attached? %>
                 <% property.images.each do |image| %>

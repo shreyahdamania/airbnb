@@ -1,0 +1,42 @@
+/* Swiper overrides for property listings (home/index) */
+
+.swiper {
+  width: 100%;
+  aspect-ratio: 1/1;
+}
+
+.swiper:hover {
+  .swiper-button-next {
+    display: block !important;
+  }
+  .swiper-button-prev {
+    display: block !important;
+  }
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  display: none !important;
+  width: 28px !important;
+  height: 28px !important;
+  background-color: white !important;
+  border-radius: 50%;
+  box-sizing: border-box;
+  color: transparent !important; /* Add this to hide text/arrow color */
+  background-size: 75% !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  display: none !important; /* Completely hide the default arrow */
+}
+
+.swiper-button-next {
+  background-image: url('next.svg') !important;
+}
+
+.swiper-button-prev {
+  background-image: url('prev.svg') !important;
+}
