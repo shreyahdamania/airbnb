@@ -12,4 +12,11 @@ export default class extends Controller {
       },
     })
   }
+
+  disconnect() {
+    // Check if the swiper instance exists before trying to destroy it
+    if (this.swiper) {
+      this.swiper.destroy()
+    }
+  }
 }

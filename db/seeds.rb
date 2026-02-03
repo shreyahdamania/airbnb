@@ -8,15 +8,9 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-Property.create!({
-  name: "Sample Property 1",
-  description: "1 description",
-  headline: "1 headline",
-  address_1: "1 address_1",
-  address_2: "1 address_2",
-  city: "Mumbai",
-  state: "Maharashtra",
-  country: "India"
+user = User.create!({
+  email: "test@gmail.com",
+  password: "123456"
 })
 
 6.times do |i|
@@ -34,4 +28,18 @@ Property.create!({
 
   property.images.attach(io: File.open("db/images/property_#{i + 1}.png"), filename: property.name)
   property.images.attach(io: File.open("db/images/property_#{i + 7}.png"), filename: property.name)
+
+  ((5..10).to_a.sample).times do
+    Review.create!({
+      content: Faker::Lorem.paragraph(sentence_count: 10),
+      cleanliness_rating: (1..5).to_a.sample,
+      accuracy_rating: (1..5).to_a.sample,
+      checkin_rating: (1..5).to_a.sample,
+      communication_rating: (1..5).to_a.sample,
+      location_rating: (1..5).to_a.sample,
+      value_rating: (1..5).to_a.sample,
+      property: property,
+      user: user
+    })
+  end
 end
