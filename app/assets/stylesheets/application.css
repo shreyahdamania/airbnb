@@ -8,3 +8,29 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/* Heart wishlist icon utilities
+ * Keep these minimal and reusable so the Stimulus controller can
+ * toggle between an outlined and filled heart state.
+ */
+.fill-none {
+  fill: none;
+}
+
+.fill-primary {
+  /* Tailwind-style red-500 */
+  fill: #ef4444;
+}
+
+/* Visually hidden text utility for accessible labels */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

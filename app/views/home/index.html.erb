@@ -7,21 +7,47 @@
     <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
       <% @properties.each do |property| %>
         <div class="group relative">
-          <div class="swiper aspect-square w-full overflow-hidden rounded-md bg-gray-200" data-controller="swiper">
-            <div class="swiper-wrapper">
-              <% if property.images.attached? %>
-                <% property.images.each do |image| %>
-                  <%= image_tag image, class: "swiper-slide h-full w-full object-cover object-center lg:h-full lg:w-full" %>
-                <% end %>  
-              <%# else %>
-                <%# Render a placeholder if no image exists %>
-                <%# image_tag "https://via.placeholder.com", class: "h-full w-full object-cover" %>
-              <% end %>
+          <div class="relative overflow-hidden rounded-md bg-gray-200">  
+            <div class="swiper" data-controller="swiper">
+              <div class="swiper-wrapper">
+                <% if property.images.attached? %>
+                  <% property.images.each do |image| %>
+                    <%= image_tag image, class: "swiper-slide h-full w-full object-cover object-center lg:h-full lg:w-full" %>
+                  <% end %>  
+                <%# else %>
+                  <%# Render a placeholder if no image exists %>
+                  <%# image_tag "https://via.placeholder.com", class: "h-full w-full object-cover" %>
+                <% end %>
+              </div>
+              <!-- If we need navigation buttons -->
+              <div class="swiper-button-prev"></div>
+              <div class="swiper-button-next"></div>  
             </div>
-            <!-- If we need navigation buttons -->
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>  
-          </div>
+            <div class="absolute z-10 right-0 top-0 m-4">
+              <button
+                type="button"
+                class="block h-6 w-6 transition-transform active:scale-90"
+                data-controller="wishlist"
+                data-wishlist-active-value="false"
+                data-wishlist-active-class="fill-primary"
+                data-action="click->wishlist#toggle"
+              >
+                <span class="sr-only">Toggle wishlist</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 32 32"
+                  aria-hidden="true"
+                  role="presentation"
+                  focusable="false"
+                  class="block h-6 w-6 stroke-white stroke-2 fill-none"
+                  style="overflow: visible;"
+                  data-wishlist-target="icon"
+                >
+                  <path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>     
           <div class="mt-2">
             <div class="flex justify-between">
               <h3 class="text-base font-medium text-gray-700">
