@@ -10,8 +10,8 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  resources :properties, only: [:index, :show] do
-    resource :favorite, only: [:create, :destroy], module: :properties
+  resources :properties, only: [ :index, :show ] do
+    resource :favorite, only: [ :create, :destroy ], module: :properties
   end
 
   # Defines the root path route ("/")
