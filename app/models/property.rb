@@ -13,6 +13,8 @@ class Property < ApplicationRecord
   has_many_attached :images
 
   has_many :reviews, dependent: :destroy
+  has_many :favorites, dependent: :destroy
+  has_many :favorited_by_users, through: :favorites, source: :user
 
   def recalculate_average_final_rating
     update_column(:average_final_rating, reviews.average(:final_rating))

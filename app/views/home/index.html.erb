@@ -24,13 +24,17 @@
               <div class="swiper-button-next"></div>  
             </div>
             <div class="absolute z-10 right-0 top-0 m-4">
+              <% active = user_signed_in? && current_user.favorited_property?(property) %>
               <button
                 type="button"
                 class="block h-6 w-6 transition-transform active:scale-90"
+                aria-label="<%= active ? 'Remove from wishlist' : 'Add to wishlist' %>"
+                aria-pressed="<%= active %>"
                 data-controller="wishlist"
-                data-wishlist-active-value="false"
-                data-wishlist-active-class="fill-primary"
                 data-action="click->wishlist#toggle"
+                data-wishlist-url-value="<%= property_favorite_path(property, format: :json) %>"
+                data-wishlist-active-value="<%= active %>"
+                data-wishlist-active-class="fill-primary"
               >
                 <span class="sr-only">Toggle wishlist</span>
                 <svg
@@ -39,7 +43,7 @@
                   aria-hidden="true"
                   role="presentation"
                   focusable="false"
-                  class="block h-6 w-6 stroke-white stroke-2 fill-none"
+                  class="block h-6 w-6 stroke-white stroke-2 <%= active ? 'fill-primary' : 'fill-none' %>"
                   style="overflow: visible;"
                   data-wishlist-target="icon"
                 >
