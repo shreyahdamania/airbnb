@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_many :favorited_properties, through: :favorites, source: :property
 
   def favorited_property?(property)
-    favorited_properties.exists?(property.id)
+    favorited_properties.exists?(property)
   end
 end
 

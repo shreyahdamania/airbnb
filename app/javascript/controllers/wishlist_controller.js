@@ -65,7 +65,7 @@ export default class extends Controller {
 
   get csrfToken() {
     const element = document.querySelector('meta[name="csrf-token"]')
-    return element && element.content
+    return element ? element.getAttribute('content') || '' : ''
   }
 }
 

@@ -19,4 +19,3 @@ class ApplicationController < ActionController::Base
     Favorite.find_or_create_by(user: user, property: property)
   end
 end
-

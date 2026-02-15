@@ -24,7 +24,7 @@ module Properties
 
     def set_property
       @property = Property.find_by(id: params[:property_id])
-      head :not_found and return if @property.blank?
+      return head :not_found if @property.blank?
     end
 
     def require_login
@@ -44,6 +44,7 @@ module Properties
           redirect_to new_user_session_path, alert: "You need to sign in to use the wishlist."
         end
       end
+      return
     end
   end
 end
