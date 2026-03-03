@@ -6,79 +6,79 @@
   <div class="mx-auto max-w-2xl px-4 sm:px-6 sm:py-8 lg:max-w-7xl lg:px-8">
     <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
       <% @properties.each do |property| %>
-        <div class="group relative">
-          <div class="relative overflow-hidden rounded-md bg-gray-200">  
-            <div class="swiper" data-controller="swiper">
-              <div class="swiper-wrapper">
-                <% if property.images.attached? %>
-                  <% property.images.each do |image| %>
-                    <%= image_tag image, class: "swiper-slide h-full w-full object-cover object-center lg:h-full lg:w-full" %>
-                  <% end %>  
-                <%# else %>
-                  <%# Render a placeholder if no image exists %>
-                  <%# image_tag "https://via.placeholder.com", class: "h-full w-full object-cover" %>
-                <% end %>
+        <%= link_to property_path(property), class: "block" do %>
+          <div class="group relative cursor-pointer">
+            <div class="relative overflow-hidden rounded-md bg-gray-200">  
+              <div class="swiper" data-controller="swiper">
+                <div class="swiper-wrapper">
+                  <% if property.images.attached? %>
+                    <% property.images.each do |image| %>
+                      <%= image_tag image, class: "swiper-slide h-full w-full object-cover object-center lg:h-full lg:w-full" %>
+                    <% end %>  
+                  <%# else %>
+                    <%# Render a placeholder if no image exists %>
+                    <%# image_tag "https://via.placeholder.com", class: "h-full w-full object-cover" %>
+                  <% end %>
+                </div>
+                <!-- If we need navigation buttons -->
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>  
               </div>
-              <!-- If we need navigation buttons -->
-              <div class="swiper-button-prev"></div>
-              <div class="swiper-button-next"></div>  
-            </div>
-            <div class="absolute z-10 right-0 top-0 m-4">
-              <% active = user_signed_in? && current_user.favorited_property?(property) %>
-              <button
-                type="button"
-                class="block h-6 w-6 transition-transform active:scale-90"
-                aria-label="<%= active ? 'Remove from wishlist' : 'Add to wishlist' %>"
-                aria-pressed="<%= active %>"
-                data-controller="wishlist"
-                data-action="click->wishlist#toggle"
-                data-wishlist-url-value="<%= property_favorite_path(property, format: :json) %>"
-                data-wishlist-active-value="<%= active %>"
-                data-wishlist-active-class="fill-primary"
-              >
-                <span class="sr-only">Toggle wishlist</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 32 32"
-                  aria-hidden="true"
-                  role="presentation"
-                  focusable="false"
-                  class="block h-6 w-6 stroke-white stroke-2 <%= active ? 'fill-primary' : 'fill-none' %>"
-                  style="overflow: visible;"
-                  data-wishlist-target="icon"
+              <div class="absolute z-10 right-0 top-0 m-4">
+                <% active = user_signed_in? && current_user.favorited_property?(property) %>
+                <button
+                  type="button"
+                  class="block h-6 w-6 transition-transform active:scale-90"
+                  aria-label="<%= active ? 'Remove from wishlist' : 'Add to wishlist' %>"
+                  aria-pressed="<%= active %>"
+                  data-controller="wishlist"
+                  data-action="click->wishlist#toggle"
+                  data-wishlist-url-value="<%= property_favorite_path(property, format: :json) %>"
+                  data-wishlist-active-value="<%= active %>"
+                  data-wishlist-active-class="fill-primary"
                 >
-                  <path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z"></path>
-                </svg>
-              </button>
+                  <span class="sr-only">Toggle wishlist</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 32 32"
+                    aria-hidden="true"
+                    role="presentation"
+                    focusable="false"
+                    class="block h-6 w-6 stroke-white stroke-2 <%= active ? 'fill-primary' : 'fill-none' %>"
+                    style="overflow: visible;"
+                    data-wishlist-target="icon"
+                  >
+                    <path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>     
+            <div class="mt-2">
+              <div class="flex justify-between">
+                <h3 class="text-base font-medium text-gray-700">
+                    <span aria-hidden="true" class="absolute inset-0"></span>
+                    <%= property.city %>, <%= property.country %>
+                </h3>
+                <p class="flex items-center text-sm font-light">
+                  <svg
+                    class="mr-1 block w-3 h-3 fill-current"
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 32 32" 
+                    aria-hidden="true" 
+                    role="presentation" 
+                    focusable="false" 
+                  >
+                    <path fill-rule="evenodd" d="m15.1 1.58-4.13 8.88-9.86 1.27a1 1 0 0 0-.54 1.74l7.3 6.57-1.97 9.85a1 1 0 0 0 1.48 1.06l8.62-5 8.63 5a1 1 0 0 0 1.48-1.06l-1.97-9.85 7.3-6.57a1 1 0 0 0-.55-1.73l-9.86-1.28-4.12-8.88a1 1 0 0 0-1.82 0z"></path>
+                  </svg>
+                  <%= property.display_average_rating %>
+                </p>
+              </div>
+              <p class="mt-0.5 text-sm text-gray-500">Hosted by Rajat</p>
+              <p class="mt-0.5 text-sm text-gray-500"><%= property.available_dates.first %> - <%= property.available_dates.last %></p>
+              <p class="mt-0.5 text-sm font-light text-black"><span class="font-medium"><%= humanized_money_with_symbol(property.price) %></span> night</p>
             </div>
-          </div>     
-          <div class="mt-2">
-            <div class="flex justify-between">
-              <h3 class="text-base font-medium text-gray-700">
-                <a href="#">
-                  <span aria-hidden="true" class="absolute inset-0"></span>
-                  <%= property.city %>, <%= property.country %>
-                </a>
-              </h3>
-              <p class="flex items-center text-sm font-light">
-                <svg
-                  class="mr-1 block w-3 h-3 fill-current"
-                  xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 32 32" 
-                  aria-hidden="true" 
-                  role="presentation" 
-                  focusable="false" 
-                >
-                  <path fill-rule="evenodd" d="m15.1 1.58-4.13 8.88-9.86 1.27a1 1 0 0 0-.54 1.74l7.3 6.57-1.97 9.85a1 1 0 0 0 1.48 1.06l8.62-5 8.63 5a1 1 0 0 0 1.48-1.06l-1.97-9.85 7.3-6.57a1 1 0 0 0-.55-1.73l-9.86-1.28-4.12-8.88a1 1 0 0 0-1.82 0z"></path>
-                </svg>
-                <%= property.display_average_rating %>
-              </p>
-            </div>
-            <p class="mt-0.5 text-sm text-gray-500">Hosted by Rajat</p>
-            <p class="mt-0.5 text-sm text-gray-500"><%= property.available_dates.first %> - <%= property.available_dates.last %></p>
-            <p class="mt-0.5 text-sm font-light text-black"><span class="font-medium"><%= humanized_money_with_symbol(property.price) %></span> night</p>
           </div>
-        </div>
+        <% end %>  
       <% end %>
     </div>
   </div>

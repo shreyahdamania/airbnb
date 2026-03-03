@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["icon"]
+  static targets = ["icon", "text"]
   static classes = ["active"]
   static values = {
     active: Boolean,
@@ -14,6 +14,10 @@ export default class extends Controller {
     const icon = this.hasIconTarget ? this.iconTarget : this.element
     icon.classList.toggle(this.activeClass, isActive)
     icon.classList.toggle("fill-none", !isActive)
+
+    if (this.hasTextTarget) {
+      this.textTarget.textContent = isActive ? "Saved" : "Save"
+    }
   }
 
   toggle(event) {

@@ -11,6 +11,6 @@ class User < ApplicationRecord
   has_many :reserved_properties, through: :reservations, source: :property, dependent: :destroy
 
   def favorited_property?(property)
-    favorited_properties.exists?(property)
+    favorited_properties.exists?(property.id)
   end
 end

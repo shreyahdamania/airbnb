@@ -1,0 +1,85 @@
+<div class="bg-white">
+  <main class="pt-4">
+    <!-- Headline + Share Button + Wishlist -->
+    <div class="flex justify-between items-center mx-auto max-w-2xl px-4 sm:px-6 lg:max-w-7xl lg:px-8 py-2">
+      <h1 class="text-2xl font-medium leading-none text-gray-900 sm:truncate"><%= @property.headline %></h1>
+      
+      <div class="flex items-center space-x-1">
+        <!-- Share Button -->
+        <button
+            type="button"
+            class="px-3 pt-2 pb-3 hover:rounded-md hover:bg-gray-100 cursor-pointer"
+        >
+            <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 32 32" aria-hidden="true" 
+            role="presentation" 
+            focusable="false" 
+            class="inline h-4 w-4"
+            style="fill: none; stroke: currentcolor; stroke-width: 2; overflow: visible;">
+            <g fill="none">
+                <path d="M27 18v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9M16 3v23V3zM6 13l9.3-9.3a1 1 0 0 1 1.4 0L26 13"></path>
+            </g>
+            </svg>
+            <span class="underline text-sm ms-1">Share</span>
+        </button>
+
+        <!-- Save Button -->
+        <% active = user_signed_in? && current_user.favorited_property?(@property) %>
+        <button
+            type="button"
+            class="px-3 pt-2 pb-3 cursor-pointer hover:rounded-md hover:bg-gray-100 "
+            aria-label="<%= active ? 'Remove from wishlist' : 'Add to wishlist' %>"
+            aria-pressed="<%= active %>"
+            data-controller="wishlist"
+            data-action="click->wishlist#toggle"
+            data-wishlist-url-value="<%= property_favorite_path(@property, format: :json) %>"
+            data-wishlist-active-value="<%= active %>"
+            data-wishlist-active-class="fill-primary"
+        >
+            <span class="sr-only">Toggle wishlist</span>
+            <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 32 32"
+            aria-hidden="true"
+            role="presentation"
+            focusable="false"
+            class="inline h-4 w-4 shrink-0 stroke-current stroke-2 <%= active ? 'fill-primary' : 'fill-none' %>"
+            style="overflow: visible;"
+            data-wishlist-target="icon"
+            >
+              <path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z"></path>
+            </svg>
+            <span
+            class="underline text-sm ms-1"
+            data-wishlist-target="text"
+            >
+            <%= active ? 'Saved' : 'Save' %>
+            </span>
+        </button>
+      </div>
+    </div>
+    <!-- Image Gallery -->
+    <div class="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:h-[640px] lg:grid-cols-4 lg:grid-rows-2 lg:gap-x-2 lg:px-8">
+      <div class="overflow-hidden lg:rounded-l-xl lg:block col-span-2 h-full">
+        <%= image_tag @property.images[0], class:"h-full w-full object-cover object-center" %>
+      </div>
+      <div class="hidden lg:grid lg:grid-cols-1 grid-rows-2 lg:gap-y-2 h-full">
+        <div class="overflow-hidden">
+          <%= image_tag @property.images[1], class:"h-full w-full object-cover object-center" %>
+        </div>
+        <div class="overflow-hidden">
+          <%= image_tag @property.images[2], class:"h-full w-full object-cover object-center" %>
+        </div>
+      </div>
+      <div class="hidden lg:grid lg:grid-cols-1 grid-rows-2 lg:gap-y-2 h-full">
+        <div class="overflow-hidden rounded-tr-xl">
+          <%= image_tag @property.images[3], class:"h-full w-full object-cover object-center" %>
+        </div>
+        <div class="overflow-hidden rounded-br-xl">
+          <%= image_tag @property.images[4], class:"h-full w-full object-cover object-center" %>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>    
