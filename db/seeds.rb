@@ -44,8 +44,17 @@
 #   end
 # end
 
+# Property.all.each do |property|
+#   5.times do |i|
+#     property.images.attach(io: File.open("db/images/property_#{i + 13}.png"), filename: property.name)
+#   end
+# end
+
 Property.all.each do |property|
-  5.times do |i|
-    property.images.attach(io: File.open("db/images/property_#{i + 13}.png"), filename: property.name)
-  end
+  property.update!({
+    guest_count: (2..5).to_a.sample,
+    bedroom_count: (4..10).to_a.sample,
+    bed_count: (4..20).to_a.sample,
+    bathroom_count: (4..10).to_a.sample
+  })
 end
