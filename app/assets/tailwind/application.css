@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../stylesheets/actiontext.css";
 
 @theme {
     --color-primary: #FF5A5F;

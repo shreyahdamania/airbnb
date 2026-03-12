@@ -1,162 +1,180 @@
 <div class="bg-white">
   <main class="pt-4">
     <!-- Headline + Share Button + Wishlist -->
-    <div class="flex justify-between items-center mx-auto max-w-2xl px-4 sm:px-6 lg:max-w-7xl lg:px-8 py-2">
-      <h1 class="text-2xl font-medium text-gray-900 sm:truncate"><%= @property.headline %></h1>
-      
+    <div
+      class="flex justify-between items-center py-2 px-4 mx-auto max-w-2xl sm:px-6 lg:px-8 lg:max-w-7xl"
+    >
+      <h1 class="text-2xl font-medium text-gray-900 sm:truncate">
+        <%= @property.headline %>
+      </h1>
+
       <div class="flex items-center space-x-1">
         <!-- Share Button -->
         <button
-            type="button"
-            class="px-3 pt-2 pb-3 hover:rounded-md hover:bg-gray-100 cursor-pointer"
+          type="button"
+          class="px-3 pt-2 pb-3 cursor-pointer hover:bg-gray-100 hover:rounded-md"
         >
-            <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox="0 0 32 32" aria-hidden="true" 
-            role="presentation" 
-            focusable="false" 
-            class="inline h-4 w-4"
-            style="fill: none; stroke: currentcolor; stroke-width: 2; overflow: visible;">
-            <g fill="none">
-                <path d="M27 18v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9M16 3v23V3zM6 13l9.3-9.3a1 1 0 0 1 1.4 0L26 13"></path>
-            </g>
-            </svg>
-            <span class="underline text-sm ms-1">Share</span>
-        </button>
-
-        <!-- Save Button -->
-        <% active = user_signed_in? && current_user.favorited_property?(@property) %>
-        <button
-            type="button"
-            class="px-3 pt-2 pb-3 cursor-pointer hover:rounded-md hover:bg-gray-100 "
-            aria-label="<%= active ? 'Remove from wishlist' : 'Add to wishlist' %>"
-            aria-pressed="<%= active %>"
-            data-controller="wishlist"
-            data-action="click->wishlist#toggle"
-            data-wishlist-url-value="<%= property_favorite_path(@property, format: :json) %>"
-            data-wishlist-active-value="<%= active %>"
-            data-wishlist-active-class="fill-primary"
-        >
-            <span class="sr-only">Toggle wishlist</span>
-            <svg
+          <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 32 32"
             aria-hidden="true"
             role="presentation"
             focusable="false"
-            class="inline h-4 w-4 shrink-0 stroke-current stroke-2 <%= active ? 'fill-primary' : 'fill-none' %>"
-            style="overflow: visible;"
+            class="inline w-4 h-4"
+            style="
+              fill: none;
+              stroke: currentcolor;
+              stroke-width: 2;
+              overflow: visible;
+            "
+          >
+            <g fill="none">
+              <path
+                d="M27 18v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9M16 3v23V3zM6 13l9.3-9.3a1 1 0 0 1 1.4 0L26 13"
+              ></path>
+            </g>
+          </svg>
+          <span class="text-sm underline ms-1">Share</span>
+        </button>
+
+        <!-- Save Button -->
+        <% active = user_signed_in? &&
+        current_user.favorited_property?(@property) %>
+        <button
+          type="button"
+          class="px-3 pt-2 pb-3 cursor-pointer hover:bg-gray-100 hover:rounded-md"
+          aria-label="<%= active ? 'Remove from wishlist' : 'Add to wishlist' %>"
+          aria-pressed="<%= active %>"
+          data-controller="wishlist"
+          data-action="click->wishlist#toggle"
+          data-wishlist-url-value="<%= property_favorite_path(@property, format: :json) %>"
+          data-wishlist-active-value="<%= active %>"
+          data-wishlist-active-class="fill-primary"
+        >
+          <span class="sr-only">Toggle wishlist</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 32 32"
+            aria-hidden="true"
+            role="presentation"
+            focusable="false"
+            class="<%= active ? 'fill-primary' : 'fill-none' %> inline h-4 w-4 shrink-0 stroke-current stroke-2"
+            style="overflow: visible"
             data-wishlist-target="icon"
-            >
-              <path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z"></path>
-            </svg>
-            <span
-            class="underline text-sm ms-1"
-            data-wishlist-target="text"
-            >
+          >
+            <path
+              d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05a6.98 6.98 0 0 0-9.9 0A6.98 6.98 0 0 0 2 11c0 7 7 12.27 14 17z"
+            ></path>
+          </svg>
+          <span class="text-sm underline ms-1" data-wishlist-target="text">
             <%= active ? 'Saved' : 'Save' %>
-            </span>
+          </span>
         </button>
       </div>
     </div>
     <!-- Image Gallery -->
-    <div class="mx-auto mt-6 max-w-2xl sm:px-6 lg:max-w-7xl lg:px-8">
-
+    <div class="mx-auto mt-6 max-w-2xl sm:px-6 lg:px-8 lg:max-w-7xl">
       <div class="lg:hidden">
-        <div class="aspect-4/3 overflow-hidden">
-          <%= image_tag @property.images[0],
-              class: "w-full h-full object-cover"
+        <div class="overflow-hidden aspect-4/3">
+          <%= image_tag @property.images[0], class: "w-full h-full object-cover"
           %>
         </div>
       </div>
 
-      <div class="hidden lg:grid lg:grid-cols-4 lg:grid-rows-2 lg:gap-2 lg:h-[320px]">
-
+      <div
+        class="hidden lg:grid lg:grid-cols-4 lg:grid-rows-2 lg:gap-2 lg:h-[320px]"
+      >
         <!-- Large Left Image -->
-        <div class="col-span-2 row-span-2 overflow-hidden rounded-l-xl lg:visi">
-          <%= image_tag @property.images[0],
-              class: "w-full h-full object-cover" %>
+        <div class="overflow-hidden col-span-2 row-span-2 rounded-l-xl lg:visi">
+          <%= image_tag @property.images[0], class: "w-full h-full object-cover"
+          %>
         </div>
 
         <!-- Top Right -->
         <div class="overflow-hidden">
-          <%= image_tag @property.images[1],
-              class: "w-full h-full object-cover" %>
+          <%= image_tag @property.images[1], class: "w-full h-full object-cover"
+          %>
         </div>
 
         <div class="overflow-hidden rounded-tr-xl">
-          <%= image_tag @property.images[2],
-              class: "w-full h-full object-cover" %>
+          <%= image_tag @property.images[2], class: "w-full h-full object-cover"
+          %>
         </div>
 
         <!-- Bottom Right -->
         <div class="overflow-hidden">
-          <%= image_tag @property.images[3],
-              class: "w-full h-full object-cover" %>
+          <%= image_tag @property.images[3], class: "w-full h-full object-cover"
+          %>
         </div>
 
         <div class="overflow-hidden rounded-br-xl">
-          <%= image_tag @property.images[4],
-              class: "w-full h-full object-cover" %>
+          <%= image_tag @property.images[4], class: "w-full h-full object-cover"
+          %>
         </div>
-
       </div>
     </div>
 
     <!-- Property info -->
-    <div class="mx-auto max-w-2xl px-4 pt-8 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8">
-      <div class="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-        <h2 class="text-xl font-medium leading-6 text-gray-900 sm:truncate ">
+    <div
+      class="px-4 pt-8 mx-auto max-w-2xl sm:px-6 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:px-8 lg:max-w-7xl lg:grid-rows-[auto,auto,1fr]"
+    >
+      <div class="lg:col-span-2 lg:pr-8 lg:border-r lg:border-gray-200">
+        <h2 class="text-xl font-medium leading-6 text-gray-900 sm:truncate">
           <%= @property.name %>, <%= @property.country %>
         </h2>
         <div class="mt-1">
           <%# TODO: Add checks: check if any value is 0 or 1 or more than 1 %>
-          <%= @property.guest_count %> guests · <%= @property.bedroom_count %> bedrooms · <%= @property.bed_count %> beds · <%= @property.bathroom_count %> bathrooms
+          <%= @property.guest_count %> guests · <%= @property.bedroom_count %>
+          bedrooms · <%= @property.bed_count %> beds · <%=
+          @property.bathroom_count %> bathrooms
         </div>
-        <div class = "mt-1 flex text-base items-center">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox="0 0 32 32" 
-            aria-hidden="true" 
-            role="presentation" 
-            focusable="false" 
-            style="display: block; height: 10px; width: 10px; fill: currentcolor; margin-right: 4px;">
-              <path fill-rule="evenodd" d="m15.1 1.58-4.13 8.88-9.86 1.27a1 1 0 0 0-.54 1.74l7.3 6.57-1.97 9.85a1 1 0 0 0 1.48 1.06l8.62-5 8.63 5a1 1 0 0 0 1.48-1.06l-1.97-9.85 7.3-6.57a1 1 0 0 0-.55-1.73l-9.86-1.28-4.12-8.88a1 1 0 0 0-1.82 0z"></path>
-            </svg>
-          
+        <div class="flex items-center mt-1 text-base">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 32 32"
+            aria-hidden="true"
+            role="presentation"
+            focusable="false"
+            style="
+              display: block;
+              height: 10px;
+              width: 10px;
+              fill: currentcolor;
+              margin-right: 4px;
+            "
+          >
+            <path
+              fill-rule="evenodd"
+              d="m15.1 1.58-4.13 8.88-9.86 1.27a1 1 0 0 0-.54 1.74l7.3 6.57-1.97 9.85a1 1 0 0 0 1.48 1.06l8.62-5 8.63 5a1 1 0 0 0 1.48-1.06l-1.97-9.85 7.3-6.57a1 1 0 0 0-.55-1.73l-9.86-1.28-4.12-8.88a1 1 0 0 0-1.82 0z"
+            ></path>
+          </svg>
+
           <% if @property.reviews_count != 0 %>
-            <span class="font-medium">
-              <%= @property.display_average_rating %> · <span class="underline"><%= @property.reviews_count %> reviews </span>
+          <span class="font-medium">
+            <%= @property.display_average_rating %> ·
+            <span class="underline"
+              ><%= @property.reviews_count %> reviews
             </span>
-          <% else %>    
-            <span class="font-light">No reviews yet</span>
-          <% end %>  
+          </span>
+          <% else %>
+          <span class="font-light">No reviews yet</span>
+          <% end %>
         </div>
       </div>
       <!-- Description and details -->
-      <div class="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
-        <div class="border-t border-gray-200 pt-10 mt-4">
+      <div
+        class="py-10 lg:col-span-2 lg:col-start-1 lg:pt-6 lg:pr-8 lg:pb-16 lg:border-r lg:border-gray-200"
+      >
+        <div class="pt-10 mt-4 border-t border-gray-200">
           <h3 class="sr-only">Description</h3>
           <div class="space-y-6">
             <p class="text-base text-gray-900">
-              <%= @property.description.truncate(500) %>
+              <%= @property.description %>
             </p>
-            <% if @property.description.length > 500 %>
-              <div class="flex items-center gap-1">
-                <span class="font-medium-underline">Show more</span>
-                <svg 
-                  viewBox="0 0 18 18" 
-                  role="presentation" 
-                  aria-hidden="true" 
-                  focusable="false" 
-                  style="height: 12px; width: 12px; display: block; fill: var(--f-k-smk-x);">
-                    <path d="m4.29 1.71a1 1 0 1 1 1.42-1.41l8 8a1 1 0 0 1 0 1.41l-8 8a1 1 0 1 1 -1.42-1.41l7.29-7.29z" fill-rule="evenodd"></path>
-                </svg>
-              </div>
-            <% end%>
+            
           </div>
-        </div>    
+        </div>
       </div>
     </div>
   </main>
-</div>    
+</div>
