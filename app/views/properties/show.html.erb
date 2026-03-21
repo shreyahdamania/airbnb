@@ -1,5 +1,5 @@
 <div class="bg-white">
-  <main class="pt-4">
+  <main class="pt-4 pb-16">
     <!-- Headline + Share Button + Wishlist -->
     <div
       class="flex justify-between items-center py-2 px-4 mx-auto max-w-2xl sm:px-6 lg:px-8 lg:max-w-7xl"
@@ -115,9 +115,7 @@
     </div>
 
     <!-- Property info -->
-    <div
-      class="px-4 pt-8 mx-auto max-w-2xl sm:px-6 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:px-8 lg:max-w-7xl lg:grid-rows-[auto,auto,1fr]"
-    >
+    <div class="px-4 pt-8 mx-auto max-w-2xl sm:px-6 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:px-8 lg:max-w-7xl lg:grid-rows-[auto,auto,1fr]">
       <div class="lg:col-span-2 lg:pr-8 lg:border-r lg:border-gray-200">
         <h2 class="text-xl font-medium leading-6 text-gray-900 sm:truncate">
           <%= @property.name %>, <%= @property.country %>
@@ -171,10 +169,12 @@
             <p class="text-base text-gray-900">
               <%= @property.description %>
             </p>
-            
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Reviews -->
+    <%= render "reviews", property: @property %>
   </main>
 </div>
