@@ -29,6 +29,30 @@ class Property < ApplicationRecord
     average_final_rating&.round(1) || "—"
   end
 
+  def average_cleanliness_rating
+    reviews.average(:cleanliness_rating)
+  end
+
+  def average_accuracy_rating
+    reviews.average(:accuracy_rating)
+  end
+
+  def average_checkin_rating
+    reviews.average(:checkin_rating)
+  end
+
+  def average_communication_rating
+    reviews.average(:communication_rating)
+  end
+
+  def average_location_rating
+    reviews.average(:location_rating)
+  end
+
+  def average_value_rating
+    reviews.average(:value_rating)
+  end
+
   def available_dates
     current_reservation = reservations.current_reservations.first
     next_reservation = reservations.upcoming_reservations.first

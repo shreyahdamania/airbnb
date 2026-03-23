@@ -110,7 +110,7 @@
         </div>
         <div class="ps-2 sm:ps-4 lg:ps-6">
           <h4 class="text-sm font-medium">Cleanliness</h4>
-          <p class="text-lg font-medium">4.0</p>
+          <p class="text-lg font-medium"><%= property.average_cleanliness_rating.round(1)%></p>
           <svg
             xmlns="http://www.w3.org/2000/svg" 
               viewBox="0 0 32 32" 
@@ -124,7 +124,7 @@
         </div>  
         <div class="ps-2 sm:ps-4 lg:ps-6">
           <h4 class="text-sm font-medium">Accuracy</h4>
-          <p class="text-lg font-medium">4.0</p>
+          <p class="text-lg font-medium"><%= property.average_accuracy_rating.round(1)%></p>
           <svg
             xmlns="http://www.w3.org/2000/svg" 
             viewBox="0 0 32 32" 
@@ -138,7 +138,7 @@
         </div>
         <div class="ps-2 sm:ps-4 lg:ps-6">
           <h4 class="text-sm font-medium">Check-in</h4>
-          <p class="text-lg font-medium">4.8</p>
+          <p class="text-lg font-medium"><%= property.average_checkin_rating.round(1)%></p>
           <svg
             xmlns="http://www.w3.org/2000/svg" 
             viewBox="0 0 32 32" 
@@ -152,7 +152,7 @@
         </div>
         <div class="ps-2 sm:ps-4 lg:ps-6">
           <h4 class="text-sm font-medium">Communication</h4>
-          <p class="text-lg font-medium">4.9</p>
+          <p class="text-lg font-medium"><%= property.average_communication_rating.round(1)%></p>
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
             viewBox="0 0 32 32" 
@@ -166,7 +166,7 @@
         </div>
         <div class="ps-2 sm:ps-4 lg:ps-6">
           <h4 class="text-sm font-medium">Location</h4>
-          <p class="text-lg font-medium">4.7</p>
+          <p class="text-lg font-medium"><%= property.average_location_rating.round(1)%></p>
           <svg
             xmlns="http://www.w3.org/2000/svg" 
             viewBox="0 0 32 32" 
@@ -180,7 +180,7 @@
         </div>
         <div class="ps-2 sm:ps-4 lg:ps-6">
           <h4 class="text-sm font-medium">Value</h4>
-          <p class="text-lg font-medium">4.9</p>
+          <p class="text-lg font-medium"><%= property.average_value_rating.round(1)%></p>
           <svg
             xmlns="http://www.w3.org/2000/svg" 
             viewBox="0 0 32 32" 
