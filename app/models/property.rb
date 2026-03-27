@@ -29,6 +29,12 @@ class Property < ApplicationRecord
     average_final_rating&.round(1) || "—"
   end
 
+  def final_rating_distribution
+    default_rating_distribution = { 5 => 0, 4 =>0, 3 => 0, 2=> 0, 1=> 0 }
+    rating_distribution = reviews.group("ROUND(final_rating)").count.transform_keys(&:to_i)
+    default_rating_distribution.merge(rating_distribution)
+  end
+
   def average_cleanliness_rating
     reviews.average(:cleanliness_rating)
   end

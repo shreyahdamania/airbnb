@@ -1,8 +1,13 @@
 <div class="px-4 pt-8 mx-auto max-w-2xl sm:px-6 lg:px-8 lg:max-w-7xl">
   <h2 id="reviews-heading" class="sr-only">Reviews</h2>
   <!-- Review Stats -->
+  <% 
+  # Fetch data once to avoid N+1 issues
+  star_distribution = property.final_rating_distribution
+  property_review_count = property.reviews_count
+  %>
   <section aria-labelledby="reviews-stats" class="pt-10 pb-10 border-t border-gray-200">
-    <% if property.reviews_count == 0 %>
+    <% if property_review_count == 0 %>
       <span class="flex items-center text-2xl font-medium leading-6 text-gray-900">
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
@@ -29,7 +34,7 @@
           <path fill-rule="evenodd" d="m15.1 1.58-4.13 8.88-9.86 1.27a1 1 0 0 0-.54 1.74l7.3 6.57-1.97 9.85a1 1 0 0 0 1.48 1.06l8.62-5 8.63 5a1 1 0 0 0 1.48-1.06l-1.97-9.85 7.3-6.57a1 1 0 0 0-.55-1.73l-9.86-1.28-4.12-8.88a1 1 0 0 0-1.82 0z"></path>
         </svg>
         <span>
-            <%= property.display_average_rating %> · <%= property.reviews_count %> reviews
+            <%= property.display_average_rating %> · <%= property_review_count %> reviews
         </span>
       </div>    
     <!-- Review category stats -->
@@ -39,72 +44,24 @@
           <div class="mt-2">
             <h3 class="sr-only">Review data</h3> 
             <dl class="space-y-0">
-              <div class="flex items-center text-xs">
-                <dt class="flex flex-1 items-center">
-                  <p class="w-3 font-medium text-gray-900">
-                    5<span class="sr-only"> star reviews</span>
-                  </p>
-                  <div aria-hideen="true" class="flex flex-1 ml-1 item-center">
-                    <div class="relative flex-1 ml-1">
-                      <div class="h-1 bg-gray-200 rounded-full border border-gray-200"></div>
-                      <div style="width: calc(1019 / 1624 * 100%)" class="absolute inset-y-0 bg-black rounded-full border border-black"></div>
-                    </div>  
-                  </div>
-                </dt>  
-              </div>
-              <div class="flex items-center text-xs">
-                <dt class="flex flex-1 items-center">
-                  <p class="w-3 font-medium text-gray-900">
-                    4<span class="sr-only"> star reviews</span>
-                  </p>
-                  <div aria-hideen="true" class="flex flex-1 ml-1 item-center">
-                    <div class="relative flex-1 ml-1">
-                      <div class="h-1 bg-gray-200 rounded-full border border-gray-200"></div>
-                      <div style="width: calc(162 / 1624 * 100%)" class="absolute inset-y-0 bg-black rounded-full border border-black"></div>
-                    </div>  
-                  </div>
-                </dt>  
-              </div>
-              <div class="flex items-center text-xs">
-                <dt class="flex flex-1 items-center">
-                  <p class="w-3 font-medium text-gray-900">
-                    3<span class="sr-only"> star reviews</span>
-                  </p>
-                  <div aria-hideen="true" class="flex flex-1 ml-1 item-center">
-                    <div class="relative flex-1 ml-1">
-                      <div class="h-1 bg-gray-200 rounded-full border border-gray-200"></div>
-                      <div style="width: calc(97 / 1624 * 100%)" class="absolute inset-y-0 bg-black rounded-full border border-black"></div>
-                    </div>  
-                  </div>
-                </dt>  
-              </div>
-              <div class="flex items-center text-xs">
-                <dt class="flex flex-1 items-center">
-                  <p class="w-3 font-medium text-gray-900">
-                    2<span class="sr-only"> star reviews</span>
-                  </p>
-                  <div aria-hideen="true" class="flex flex-1 ml-1 item-center">
-                    <div class="relative flex-1 ml-1">
-                      <div class="h-1 bg-gray-200 rounded-full border border-gray-200"></div>
-                      <div style="width: calc(199 / 1624 * 100%)" class="absolute inset-y-0 bg-black rounded-full border border-black"></div>
-                    </div>  
-                  </div>
-                </dt>  
-              </div>
               <!-- More concise code for rating -->
-              <div class="flex gap-2 items-center text-xs">
-                <!-- Fixed width for the number label -->
-                <span class="w-3 font-medium text-gray-900">1</span>
-                <span class="sr-only">star reviews</span>
+              <% 5.times do |index| %>
+                <div class="flex gap-2 items-center text-xs">
+                  <!-- Fixed width for the number label -->
+                  <span class="w-3 font-medium text-gray-900"><%= (5 - index) %></span>
+                  <span class="sr-only">star reviews</span>
 
-                <!-- Simplified progress bar container -->
-                <div class="overflow-hidden relative flex-1 h-1 bg-gray-200 rounded-full">
-                  <div 
-                    style="width: calc(147 / 1624 * 100%)" 
-                    class="absolute inset-y-0 left-0 bg-black"
-                  ></div>
+                  <!-- Simplified progress bar container -->
+                  <div class="overflow-hidden relative flex-1 h-1 bg-gray-200 rounded-full">
+                    <div 
+                    <%# calculating percentage for width safely %>
+                    <%# fdiv is a method that explicitly performs float division on two integers %>
+                      style="width: <%= property_review_count > 0 ? (star_distribution[5 - index].fdiv(property_review_count) * 100 ) : 0 %>% " 
+                      class="absolute inset-y-0 left-0 bg-black"
+                    ></div>
+                  </div>
                 </div>
-              </div>
+              <% end %>  
             </dl> 
           </div>
         </div>
