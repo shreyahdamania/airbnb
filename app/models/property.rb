@@ -19,6 +19,11 @@ class Property < ApplicationRecord
   has_many :reservations, dependent: :destroy
   has_many :reserved_users, through: :reservations, source: :user, dependent: :destroy
 
+  has_many :property_amenities, dependent: :destroy
+  has_many :amenities, through: :property_amenities
+
+  AMENITIES_PREVIEW_LIMIT = 10
+
   has_rich_text :description
 
   def recalculate_average_final_rating
@@ -76,5 +81,57 @@ class Property < ApplicationRecord
     else
       current_reservation.checkout_date.strftime("%e %b")..next_reservation.checkin_date.strftime("%e %b")
     end
+  end
+
+  def amenities_for_preview
+    mandatory_amenities    = Amenity.always_shown_if_absent.ordered
+    mandatory_slugs        = mandatory_amenities.map(&:slug).to_set
+    regular_slot_count     = AMENITIES_PREVIEW_LIMIT - mandatory_amenities.size
+
+    host_configured_amenities = property_amenities
+                                  .includes(:amenity)
+                                  .joins(:amenity)
+                                  .merge(Amenity.ordered)
+                                  .to_a
+
+    configured_by_slug = host_configured_amenities.index_by { |pa| pa.amenity.slug }
+
+    regular_preview = host_configured_amenities
+                        .reject { |pa| mandatory_slugs.include?(pa.amenity.slug) }
+                        .select(&:available?)
+                        .first(regular_slot_count)
+
+    mandatory_preview = mandatory_amenities.map do |amenity|
+      configured_by_slug[amenity.slug] || PropertyAmenity.new(property: self, amenity: amenity, available: false)
+    end
+
+    (regular_preview + mandatory_preview).sort_by { |pa| pa.amenity.display_priority }
+  end
+
+  def amenities_for_modal
+    configured = property_amenities
+                  .includes(amenity: :amenity_category)
+                  .joins(:amenity)
+                  .merge(Amenity.ordered)
+
+    configured_amenity_ids = configured.map { |pa| pa.amenity_id }
+
+    always_absent = Amenity
+                      .always_shown_if_absent
+                      .includes(:amenity_category)
+                      .where.not(id: configured_amenity_ids)
+                      .ordered
+
+    ghost_rows = always_absent.map do |amenity|
+      PropertyAmenity.new(property: self, amenity: amenity, available: false)
+    end
+
+    all_rows = configured.to_a + ghost_rows
+
+    all_rows
+      .select { |pa| pa.available? || pa.always_shown_if_absent }
+      .group_by { |pa| pa.amenity_category }
+      .sort_by { |category, _| category.display_order }
+      .to_h
   end
 end

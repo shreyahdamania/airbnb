@@ -1,0 +1,79 @@
+<%# app/views/properties/_amenities_modal.html.erb %>
+  <div
+    data-action="click->modal#closeOnBackdrop"
+    data-modal-target="panel"
+    class="flex hidden fixed inset-0 z-50 items-end sm:justify-center sm:items-center bg-black/50"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="amenities-modal-title"
+  >
+    <div
+      class="flex relative flex-col w-full bg-white rounded-t-2xl sm:max-w-2xl sm:rounded-2xl max-h-[90vh] will-change-transform"
+      data-action="touchstart->modal#dragStart touchmove->modal#drag touchend->modal#dragEnd"
+    >
+
+      <%# Drag handle — visible on mobile only %>
+      <div class="flex justify-center pt-3 pb-1 sm:hidden" aria-hidden="true">
+        <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+      </div>
+
+      <%# Header %>
+      <div class="flex justify-between items-center py-4 px-6 border-b border-gray-200 shrink-0">
+        <h2
+          id="amenities-modal-title"
+          class="text-lg font-medium text-gray-900"
+        >
+          What this place offers
+        </h2>
+        <button
+          type="button"
+          data-action="modal#close"
+          class="p-2 text-gray-400 rounded-full hover:text-gray-600 hover:bg-gray-100 focus:ring-2 focus:ring-gray-900 focus:outline-none"
+          aria-label="Close amenities"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <%# Scrollable body %>
+      <div class="overflow-y-auto flex-1 py-6 px-6">
+        <% property.amenities_for_modal.each do |category, amenity_rows| %>
+          <div class="mb-8">
+            <h3 class="mb-4 text-base font-medium text-gray-900">
+              <%= category.name %>
+            </h3>
+
+            <ul class="divide-y divide-gray-100" role="list">
+              <% amenity_rows.each do |pa| %>
+                <li class="flex items-start gap-x-4 py-4 <%= "opacity-40" unless pa.available? %>">
+
+                  <span class="mt-0.5 text-gray-500 shrink-0">
+                    <%= amenity_icon(pa.slug) %>
+                  </span>
+
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900 <%= "line-through" unless pa.available? %>">
+                      <%= pa.name %>
+                    </p>
+                    <% if pa.details.present? %>
+                      <p class="mt-0.5 text-sm text-gray-500"><%= pa.details %></p>
+                    <% end %>
+                    <% if !pa.available? && pa.absence_description.present? %>
+                      <p class="mt-0.5 text-sm text-gray-500"><%= pa.absence_description %></p>
+                    <% end %>
+                    <% if pa.extra_cost? %>
+                      <p class="mt-0.5 text-sm text-gray-500">Available at extra cost</p>
+                    <% end %>
+                  </div>
+
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+  </div>

@@ -31,11 +31,13 @@
   </head>  
 
   <body>
+    <%= render "shared/icons" %>
     <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
     <% if controller_name != 'registrations' && controller_name != 'sessions' %>
       <%= render "layouts/header" %>
     <% end %>
     <%= yield %>
+    <%= yield :modal %>
   </body>
 </html>
