@@ -1,17 +1,37 @@
+<%# locals: (property:, wrapper_class: "", form_suffix: "default") %> <%# more simpler way of assigning variable to partial %>
 <% suffix = local_assigns.fetch(:form_suffix, "default") %>
-<% property = local_assigns.fetch(:property, @property) %>
-<div class="<%= local_assigns.fetch(:wrapper_class, "") %> border rounded-xl p-6 shadow-xs h-auto">
+<% property = local_assigns.fetch(:property, property) %>
+<div 
+  class="<%= local_assigns.fetch(:wrapper_class, "") %> border rounded-xl p-6 shadow-xs h-auto"
+  data-controller = "booking"
+  data-booking-per-night-price-cents-value = "<%= property.price_cents %>"  
+  data-booking-service-fee-ratio-value = "0.18"
+>
   <h2 class="sr-only">Booking information</h2>
-  <p class="text-lg font-light tracking-tight text-gray-900"><span class="text-2xl font-semibold"><%= humanized_money_with_symbol(property.price) %></span> night</p>
+  <p class="text-lg font-light tracking-tight text-gray-900">
+    <span class="text-2xl font-semibold"><%= humanized_money_with_symbol(property.price) %></span> night
+  </p>
   <div class="flex mt-6">
     <div class="px-3 pt-2.5 pb-1.5 rounded-l-lg ring-1 ring-inset ring-gray-400 shadow-sm focus-within:ring-2 focus-within:ring-black">
-      <label for="booking-name-a-<%= suffix %>" class="block text-xs font-medium text-gray-900">Name</label>
-      <input type="text" name="name" id="booking-name-a-<%= suffix %>" class="block p-0 w-full text-gray-900 border-0 sm:text-sm sm:leading-6 focus:ring-0 focus:outline-none placeholder:text-gray-400" placeholder="Jane Smith">
+      <label for="checkin-<%= suffix %>" class="block text-xs font-medium text-gray-900">CHECK-IN</label>
+      <input 
+        type="text" 
+        name="checkin" 
+        id="checkin-<%= suffix %>" 
+        class="block p-0 w-full text-gray-900 border-0 sm:text-sm sm:leading-6 focus:ring-0 focus:outline-none placeholder:text-gray-400" 
+        placeholder="26/01/2026"
+      >
     </div>
 
     <div class="px-3 pt-2.5 pb-1.5 rounded-r-lg ring-1 ring-inset ring-gray-400 shadow-sm focus-within:ring-2 focus-within:ring-black">
-      <label for="booking-name-b-<%= suffix %>" class="block text-xs font-medium text-gray-900">Name</label>
-      <input type="text" name="name" id="booking-name-b-<%= suffix %>" class="block p-0 w-full text-gray-900 border-0 sm:text-sm sm:leading-6 focus:ring-0 focus:outline-none placeholder:text-gray-400" placeholder="Jane Smith">
+      <label for="checkout-<%= suffix %>" class="block text-xs font-medium text-gray-900">CHECK-OUT</label>
+      <input 
+        type="text" 
+        name="checkout" 
+        id="checkout-<%= suffix %>" 
+        class="block p-0 w-full text-gray-900 border-0 sm:text-sm sm:leading-6 focus:ring-0 focus:outline-none placeholder:text-gray-400" 
+        placeholder="27/01/2026"
+      >
     </div>
 
   </div>
@@ -22,23 +42,30 @@
     Reserve
   </button>
   <p class="py-4 text-sm font-light text-center">You won't be charged yet</p>
-  <div class="mt-4">
+  <div class="mt-4 space-y-4">
     <div class="flex justify-between font-light">
-      <p>₹4,990 x 1 night</p>
-      <p>₹4,990</p>
+      <p>
+        <%= humanized_money_with_symbol(property.price) %> x <span data-booking-target = "numberOfNights">1</span> night
+      </p>
+      <p>
+        <%= currency_symbol %> <span data-booking-target = "baseFare">0</span>
+      </p>
     </div>
-    <div class="flex justify-between mt-4 font-light">
+    <div class="flex justify-between font-light">
       <p>Airbnb service fee</p>
-      <p>₹704</p>
+      <p>
+        <%= currency_symbol %> <span data-booking-target = "serviceFee">0</span>
+      </p>
     </div>
-  </div>
-  <div class="relative py-6">
-    <div class="flex absolute inset-0 items-center" aria-hidden="true">
-      <div class="w-full border-t border-gray-300"></div>
+  
+    <hr class="border-gray-300">
+
+    <div class="flex justify-between font-medium">
+      <p>Total before taxes</p>
+      <p>
+        <%= currency_symbol %>
+        <span data-booking-target="totalAmount">0</span>
+      </p>
     </div>
-  </div>
-  <div class="flex justify-between font-medium">
-    <p>Total before taxes</p>
-    <p>₹5,694</p>
   </div>
 </div>
