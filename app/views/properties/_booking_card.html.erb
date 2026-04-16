@@ -1,71 +1,92 @@
-<%# locals: (property:, wrapper_class: "", form_suffix: "default") %> <%# more simpler way of assigning variable to partial %>
-<% suffix = local_assigns.fetch(:form_suffix, "default") %>
-<% property = local_assigns.fetch(:property, property) %>
-<div 
+<%# locals: (property:, wrapper_class: "", form_suffix: "default") %>
+<% suffix      = local_assigns.fetch(:form_suffix, "default") %>
+<% property    = local_assigns.fetch(:property, property) %>
+
+<%# SEO: compute 1-night price server-side so HTML contains real numbers immediately %>
+<% one_night_base_cents    = property.price_cents.to_i %>
+<% service_fee_cents       = (one_night_base_cents * 0.18).round %>
+<% total_cents             = one_night_base_cents + service_fee_cents %>
+<% one_night_base          = one_night_base_cents  / 100.0 %>
+<% one_night_fee           = service_fee_cents     / 100.0 %>
+<% one_night_total         = total_cents            / 100.0 %>
+
+<div
   class="<%= local_assigns.fetch(:wrapper_class, "") %> border rounded-xl p-6 shadow-xs h-auto"
-  data-controller = "booking"
-  data-booking-per-night-price-cents-value = "<%= property.price_cents %>"  
-  data-booking-service-fee-ratio-value = "0.18"
+  data-controller="booking"
+  data-booking-per-night-price-cents-value="<%= property.price_cents %>"
+  data-booking-service-fee-ratio-value="0.18"
+  data-booking-booked-dates-value="<%= property.reservations.map { |r| { from: r.checkin_date, to: r.checkout_date } }.to_json %>"
+  tabindex="-1"
 >
   <h2 class="sr-only">Booking information</h2>
+
   <p class="text-lg font-light tracking-tight text-gray-900">
     <span class="text-2xl font-semibold"><%= humanized_money_with_symbol(property.price) %></span> night
   </p>
+
   <div class="flex mt-6">
-    <div class="px-3 pt-2.5 pb-1.5 rounded-l-lg ring-1 ring-inset ring-gray-400 shadow-sm focus-within:ring-2 focus-within:ring-black">
+    <div
+      class="px-3 pt-2.5 pb-1.5 rounded-l-lg ring-1 ring-inset ring-gray-400 shadow-sm transition-shadow"
+      data-booking-target="checkinWrapper"
+    >
       <label for="checkin-<%= suffix %>" class="block text-xs font-medium text-gray-900">CHECK-IN</label>
-      <input 
-        type="text" 
-        name="checkin" 
-        id="checkin-<%= suffix %>" 
-        class="block p-0 w-full text-gray-900 border-0 sm:text-sm sm:leading-6 focus:ring-0 focus:outline-none placeholder:text-gray-400" 
-        placeholder="26/01/2026"
+      <input
+        type="text"
+        name="checkin"
+        id="checkin-<%= suffix %>"
+        class="block p-0 w-full text-gray-900 border-0 sm:text-sm sm:leading-6 focus:ring-0 focus:outline-none placeholder:text-gray-400"
+        value="<%= Date.tomorrow.strftime("%Y-%m-%d") %>"
+        readonly
+        data-booking-target="checkin"
       >
     </div>
 
-    <div class="px-3 pt-2.5 pb-1.5 rounded-r-lg ring-1 ring-inset ring-gray-400 shadow-sm focus-within:ring-2 focus-within:ring-black">
+    <div
+      class="px-3 pt-2.5 pb-1.5 rounded-r-lg ring-1 ring-inset ring-gray-400 shadow-sm transition-shadow"
+      data-booking-target="checkoutWrapper"
+    >
       <label for="checkout-<%= suffix %>" class="block text-xs font-medium text-gray-900">CHECK-OUT</label>
-      <input 
-        type="text" 
-        name="checkout" 
-        id="checkout-<%= suffix %>" 
-        class="block p-0 w-full text-gray-900 border-0 sm:text-sm sm:leading-6 focus:ring-0 focus:outline-none placeholder:text-gray-400" 
-        placeholder="27/01/2026"
+      <input
+        type="text"
+        name="checkout"
+        id="checkout-<%= suffix %>"
+        class="block p-0 w-full text-gray-900 border-0 sm:text-sm sm:leading-6 focus:ring-0 focus:outline-none placeholder:text-gray-400"
+        value="<%= (Date.tomorrow + 1.day).strftime("%Y-%m-%d") %>"
+        readonly
+        data-booking-target="checkout"
       >
     </div>
-
   </div>
+
   <button
     type="submit"
+    data-booking-target="reserveButton"
     class="flex justify-center items-center py-3 px-8 mt-4 w-full text-base font-medium text-white rounded-md border border-transparent focus:ring-2 focus:ring-offset-2 focus:outline-none bg-primary hover:bg-primary-dark focus:ring-primary"
   >
     Reserve
   </button>
+
   <p class="py-4 text-sm font-light text-center">You won't be charged yet</p>
+
   <div class="mt-4 space-y-4">
     <div class="flex justify-between font-light">
       <p>
-        <%= humanized_money_with_symbol(property.price) %> x <span data-booking-target = "numberOfNights">1</span> night
+        <%= humanized_money_with_symbol(property.price) %> x
+        <span data-booking-target="numberOfNights">1</span> night
       </p>
-      <p>
-        <%= currency_symbol %> <span data-booking-target = "baseFare">0</span>
-      </p>
+      <p><%= currency_symbol %> <span data-booking-target="baseFare"><%= "%.2f" % one_night_base %></span></p>
     </div>
+
     <div class="flex justify-between font-light">
       <p>Airbnb service fee</p>
-      <p>
-        <%= currency_symbol %> <span data-booking-target = "serviceFee">0</span>
-      </p>
+      <p><%= currency_symbol %> <span data-booking-target="serviceFee"><%= "%.2f" % one_night_fee %></span></p>
     </div>
-  
+
     <hr class="border-gray-300">
 
     <div class="flex justify-between font-medium">
       <p>Total before taxes</p>
-      <p>
-        <%= currency_symbol %>
-        <span data-booking-target="totalAmount">0</span>
-      </p>
+      <p><%= currency_symbol %> <span data-booking-target="totalAmount"><%= "%.2f" % one_night_total %></span></p>
     </div>
   </div>
 </div>

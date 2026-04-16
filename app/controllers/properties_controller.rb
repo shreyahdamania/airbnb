@@ -1,5 +1,7 @@
 class PropertiesController < ApplicationController
     def show
-      @property = Property.find(params[:id])
+      @property = Property
+                    .includes(:reservations, property_amenities: { amenity: :amenity_category })
+                    .find(params[:id])
     end
 end
