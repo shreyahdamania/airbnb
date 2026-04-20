@@ -24,11 +24,18 @@ export default class extends Controller {
   static CENTS_PER_UNIT = 100
 
   connect() {
+    // Parse booked dates once into JS Date objects at midnight local time.
+    // Every method reads from this.reservations — never re-parses strings.
+    // Shape: [{ from: Date, to: Date }, ...]
+    this.reservations = (this.bookedDatesValue || []).map(({ from, to }) => ({
+      from: this.#parseDate(from),
+      to:   this.#parseDate(to),
+    }))
+
     this.#initCheckinPicker()
     this.#initCheckoutPicker()
     this.#updatePriceDisplay()
   }
-   
 
   disconnect() {
     this.checkinPicker?.destroy()
@@ -44,9 +51,15 @@ export default class extends Controller {
       altFormat:     "d-m-Y",
       allowInput:    false,
       minDate:       this.#tomorrow(),
-      disable:       this.#disabledRanges(),
       disableMobile: true,
       defaultDate:   this.checkinTarget.value,
+
+      // A function is used instead of an array so the logic can be
+      // conditional. flatpickr calls this for every date it renders.
+      // Return true = date is blocked/greyed out.
+      disable: [
+        (date) => this.#isCheckinBlocked(date)
+      ],
 
       onOpen: () => {
         this.#activateWrapper(this.checkinWrapperTarget)
@@ -54,7 +67,6 @@ export default class extends Controller {
 
       onClose: () => {
         this.#clearWrapper(this.checkinWrapperTarget)
-        // Drop focus so switching windows does not re-trigger onOpen
         this.checkinPicker.altInput?.blur()
       },
 
@@ -72,7 +84,6 @@ export default class extends Controller {
       altFormat:     "d-m-Y",
       allowInput:    false,
       minDate:       this.#addDays(this.#tomorrow(), 1),
-      disable:       this.#disabledRanges(),
       disableMobile: true,
       defaultDate:   this.checkoutTarget.value,
 
@@ -82,10 +93,7 @@ export default class extends Controller {
 
       onClose: () => {
         this.#clearWrapper(this.checkoutWrapperTarget)
-
-        // After checkout is picked, move focus to the booking container element
-        // so the browser has nothing date-picker-related to restore focus to
-        // when the user switches windows and returns.
+        this.checkoutPicker.altInput?.blur()
         this.element.focus({ preventScroll: true })
 
         if (this.checkinTarget.value && this.checkoutTarget.value) {
@@ -95,27 +103,71 @@ export default class extends Controller {
     })
   }
 
+  // ─── Private: checkin blocked date logic ──────────────────────────────────
+
+  // Returns true if the given date should be blocked in the checkin picker.
+  // A date is blocked if:
+  //   1. It is the `from` date of any existing reservation (someone is
+  //      checking in that day — the property is taken from that point).
+  //   2. It falls strictly between `from` and `to` of any reservation
+  //      (the property is physically occupied that night).
+  //
+  // The `to` date is deliberately NOT blocked — a guest checking out that
+  // morning means the property is free for a new checkin that same day.
+  #isCheckinBlocked(date) {
+    return this.reservations.some(({ from, to }) => {
+      const isFromDate        = this.#isSameDay(date, from)
+      const isOccupiedBetween = date > from && date < to
+      return isFromDate || isOccupiedBetween
+    })
+  }
+
   // ─── Private: date change logic ───────────────────────────────────────────
 
   #onCheckinChange(checkinDate) {
     const minCheckout = this.#addDays(checkinDate, 1)
-
     this.checkoutPicker.set("minDate", minCheckout)
 
-    // Clear checkout if it is now on or before the new checkin date
-    const existingCheckout = this.checkoutPicker.selectedDates[0]
-    if (existingCheckout && existingCheckout <= checkinDate) {
-      this.checkoutPicker.clear()
+    // Find the maximum valid checkout: the `from` date of the first
+    // reservation that starts strictly after the selected checkin.
+    // Example: checkin Apr 18, reservations exist Apr 21–25 and Apr 28–30.
+    // The first `from` after Apr 18 is Apr 21, so maxDate = Apr 21.
+    // The guest can checkout Apr 19, 20, or 21 (Apr 21 is valid because
+    // one guest checking out as another checks in is allowed).
+    const nextReservation = this.#nextReservationAfter(checkinDate)
+
+    if (nextReservation) {
+      this.checkoutPicker.set("maxDate", nextReservation.from)
+    } else {
+      // No upcoming reservation — remove the upper bound entirely
+      this.checkoutPicker.set("maxDate", null)
     }
 
-    // Bug 3 fix: always recalculate price after checkin changes.
-    // If checkout was cleared above, #numberOfNights() returns 0
-    // and #updatePriceDisplay() calls #resetPriceDisplay() internally.
-    // If checkout is still valid, the new correct night count is shown immediately.
+    // Clear checkout if it is now outside the valid range
+    const existingCheckout = this.checkoutPicker.selectedDates[0]
+    if (existingCheckout) {
+      const tooEarly = existingCheckout <= checkinDate
+      const tooLate  = nextReservation && existingCheckout > nextReservation.from
+
+      if (tooEarly || tooLate) {
+        this.checkoutPicker.clear()
+      }
+    }
+
+    // Always recalculate — if checkout was cleared this returns 0
+    // and #resetPriceDisplay() runs. If checkout is still valid,
+    // the new correct night count is shown immediately.
     this.#updatePriceDisplay()
 
-    // Open checkout picker — use .open() not .click(), works on mobile
     setTimeout(() => this.checkoutPicker.open(), 50)
+  }
+
+  // Returns the first reservation whose `from` date is strictly after
+  // the given date, sorted chronologically so we get the nearest one.
+  #nextReservationAfter(date) {
+    return this.reservations
+      .filter(({ from }) => from > date)
+      .sort((a, b) => a.from - b.from)[0] || null
   }
 
   // ─── Private: border management ───────────────────────────────────────────
@@ -167,6 +219,25 @@ export default class extends Controller {
     return Math.round((checkout - checkin) / (1000 * 60 * 60 * 24))
   }
 
+  // Parses "YYYY-MM-DD" strings from Rails into a JS Date at local midnight.
+  // Using new Date("YYYY-MM-DD") directly parses as UTC midnight, which
+  // causes an off-by-one day error in timezones behind UTC (e.g. US).
+  // Splitting and constructing manually guarantees local midnight.
+  #parseDate(str) {
+    const [year, month, day] = str.split("-").map(Number)
+    const d = new Date(year, month - 1, day)
+    d.setHours(0, 0, 0, 0)
+    return d
+  }
+
+  #isSameDay(a, b) {
+    return (
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth()    === b.getMonth()    &&
+      a.getDate()     === b.getDate()
+    )
+  }
+
   #tomorrow() {
     const d = new Date()
     d.setHours(0, 0, 0, 0)
@@ -178,9 +249,5 @@ export default class extends Controller {
     const d = new Date(date)
     d.setDate(d.getDate() + n)
     return d
-  }
-
-  #disabledRanges() {
-    return (this.bookedDatesValue || []).map(({ from, to }) => ({ from, to }))
   }
 }
