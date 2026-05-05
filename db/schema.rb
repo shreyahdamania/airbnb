@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_01_132617) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_05_114500) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "btree_gist"
   enable_extension "pg_catalog.plpgsql"
 
   create_table "action_text_rich_texts", force: :cascade do |t|
@@ -88,6 +89,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_01_132617) do
     t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
+  create_table "payments", force: :cascade do |t|
+    t.bigint "reservation_id", null: false
+    t.integer "base_fare_cents"
+    t.string "base_fare_currency"
+    t.integer "total_amount_cents"
+    t.string "total_amount_currency"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "service_fee_ratio", precision: 5, scale: 4, default: "0.0"
+    t.string "stripe_checkout_session_id"
+    t.index ["reservation_id"], name: "index_payments_on_reservation_id"
+    t.index ["stripe_checkout_session_id"], name: "index_payments_on_stripe_checkout_session_id", unique: true
+  end
+
   create_table "properties", force: :cascade do |t|
     t.string "name"
     t.string "headline"
@@ -125,12 +140,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_01_132617) do
   create_table "reservations", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "property_id", null: false
-    t.date "checkin_date"
-    t.date "checkout_date"
+    t.date "checkin_date", null: false
+    t.date "checkout_date", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["property_id"], name: "index_reservations_on_property_id"
     t.index ["user_id"], name: "index_reservations_on_user_id"
+    t.check_constraint "checkout_date > checkin_date", name: "reservations_checkout_after_checkin"
+    t.exclusion_constraint "property_id WITH =, daterange(checkin_date, checkout_date, '[)'::text) WITH &&", using: :gist, name: "reservations_no_overlapping_dates_per_property"
   end
 
   create_table "reviews", force: :cascade do |t|
@@ -173,6 +190,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_01_132617) do
   add_foreign_key "amenities", "amenity_categories"
   add_foreign_key "favorites", "properties"
   add_foreign_key "favorites", "users"
+  add_foreign_key "payments", "reservations"
   add_foreign_key "property_amenities", "amenities"
   add_foreign_key "property_amenities", "properties"
   add_foreign_key "reservations", "properties"

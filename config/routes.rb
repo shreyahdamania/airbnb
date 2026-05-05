@@ -12,7 +12,14 @@ Rails.application.routes.draw do
 
   resources :properties, only: [ :index, :show ] do
     resource :favorite, only: [ :create, :destroy ], module: :properties
+    resources :bookings, only: [ :new ], module: :properties
   end
+
+  post "checkout" => "checkouts#create"
+  get "checkout/success" => "checkouts#success"
+  get "checkout/cancel" => "checkouts#cancel"
+
+  post "/webhooks/stripe" => "webhooks#stripe"
 
   # Defines the root path route ("/")
   root "home#index"

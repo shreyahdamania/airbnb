@@ -66,3 +66,7 @@ gem "money-rails", "~> 3.0"
 
 gem "image_processing", "~> 1.13"
 gem "mini_magick", "~> 4.12"
+
+gem "stripe", "~> 19.1"
+
+gem "fiddle", "~> 1.1"

@@ -22,6 +22,8 @@ class Property < ApplicationRecord
   has_many :property_amenities, dependent: :destroy
   has_many :amenities, through: :property_amenities
 
+  has_many :payments, through: :reservations, dependent: :destroy
+
   AMENITIES_PREVIEW_LIMIT = 10
 
   has_rich_text :description

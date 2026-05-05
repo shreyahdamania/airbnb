@@ -61,6 +61,8 @@
   <button
     type="submit"
     data-booking-target="reserveButton"
+    data-reserve-property-url="<%= new_property_booking_path(property) %>"
+    data-action="click->booking#reserveProperty"
     class="flex justify-center items-center py-3 px-8 mt-4 w-full text-base font-medium text-white rounded-md border border-transparent focus:ring-2 focus:ring-offset-2 focus:outline-none bg-primary hover:bg-primary-dark focus:ring-primary"
   >
     Reserve

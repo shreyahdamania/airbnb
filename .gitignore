@@ -41,3 +41,7 @@ node_modules/
 package-lock.json
 package.json
 prettier.config.js
+
+/config/credentials/development.key
+.cursor/settings.json
+

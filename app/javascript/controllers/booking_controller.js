@@ -122,6 +122,20 @@ export default class extends Controller {
     })
   }
 
+  reserveProperty(e) {
+    e.preventDefault();
+
+    const paramsData = {
+      checkin_date: this.checkinTarget.value,
+      checkout_date: this.checkoutTarget.value
+    };
+
+    const paramsURL = new URLSearchParams(paramsData).toString();
+    const baseURL = e.currentTarget.dataset.reservePropertyUrl;
+
+    Turbo.visit(`${baseURL}?${paramsURL}`);
+  }
+
   // ─── Private: date change logic ───────────────────────────────────────────
 
   #onCheckinChange(checkinDate) {
